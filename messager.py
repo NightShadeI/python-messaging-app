@@ -19,15 +19,16 @@ def broadcast(msg, prefix=""):
 
 def handle_client(client):
 	name = client.recv(BUFSIZ).decode("utf8")
-	client.send("if you ever want to quit simply type 'q'")
-	broadcast(bytes("{} has joined the chat :)".format(name)))
+	clients[client] = name
+	client.send(bytes("if you ever want to quit simply type 'q'", "utf8"))
+	broadcast(bytes("{} has joined the chat :)".format(name), "utf8"))
 	clients[client] = name
 	while True:
 		msg = client.recv(BUFSIZ)
 		if msg != bytes("q", "utf8"):
 			broadcast(msg, name+": ")
 		else:
-			client.send(bytes("bye!"), "utf8")
+			client.send(bytes("bye!", "utf8"))
 			client.close()
 			del clients[client]
 			broadcast(bytes("{} has left the chat".format(name), "utf8"))
@@ -46,6 +47,7 @@ def accept_incoming_connections():
 if __name__ == "__main__":
 	SERVER.listen(5)
 	print("Waiting for connection ...")
+	print(SERVER)
 	ACCEPT_THREAD = Thread(target=accept_incoming_connections)
 	ACCEPT_THREAD.start()
 	ACCEPT_THREAD.join()

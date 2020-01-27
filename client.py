@@ -1,6 +1,7 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
+import sys
 
 BUFSIZ = 1024
 
@@ -20,7 +21,7 @@ def send(event=None):
 	client_socket.send(bytes(msg, "utf8"))
 	if msg == "q":
 		client_socket.close()
-		top.quit()
+		top.destroy()
 
 
 def on_closing(event=None):
@@ -33,9 +34,9 @@ top.title("Messager")
 message_frame = tkinter.Frame(top)
 my_msg = tkinter.StringVar()
 my_msg.set("Type your messages here.")
-scrollbar = tkinter.ScrollBar(message_frame)
+scrollbar = tkinter.Scrollbar(message_frame)
 
-msg_list = tkinter.ListBox(message_frame, height=15, width=50, yscrollcommand=scrollbar.set)
+msg_list = tkinter.Listbox(message_frame, height=15, width=50, yscrollcommand=scrollbar.set)
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
