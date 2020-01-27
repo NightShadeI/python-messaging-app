@@ -1,5 +1,6 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
+import time
 
 clients = {}
 addresses = {}
@@ -24,7 +25,12 @@ def handle_client(client):
 	broadcast(bytes("{} has joined the chat :)".format(name), "utf8"))
 	clients[client] = name
 	while True:
-		msg = client.recv(BUFSIZ)
+		try:
+			msg = client.recv(BUFSIZ)
+		except ConnectionResetError:
+			del clients[client]
+			broadcast(bytes("{} has left the chat".format(name), "utf8"))
+			break
 		if msg != bytes("q", "utf8"):
 			broadcast(msg, name+": ")
 		else:
@@ -42,6 +48,7 @@ def accept_incoming_connections():
 		client.send(bytes("Enter your username: ", "utf8"))
 		addresses[client] = client_address
 		Thread(target=handle_client, args=(client,)).start()
+		time.sleep(10)
 
 
 if __name__ == "__main__":
