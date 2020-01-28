@@ -9,7 +9,10 @@ def receive():
 	while True:
 		try:
 			msg = client_socket.recv(BUFSIZ).decode("utf8")
+			scroll_level = msg_list.yview()[1]
 			msg_list.insert(tkinter.END, msg)
+			if auto_scroll.get() == 1 or scroll_level == 1:
+				msg_list.yview(tkinter.END)
 		except OSError:
 			print("OSError!!", flush=True)
 			break
@@ -31,9 +34,14 @@ def on_closing(event=None):
 
 top = tkinter.Tk()
 top.title("Messager")
+
+auto_scroll = tkinter.IntVar()
+check_button = tkinter.Checkbutton(top, text="Always autoscroll", variable=auto_scroll)
+check_button.pack()
+
 message_frame = tkinter.Frame(top)
 my_msg = tkinter.StringVar()
-my_msg.set("Type your messages here.")
+my_msg.set("Type here.")
 scrollbar = tkinter.Scrollbar(message_frame)
 
 msg_list = tkinter.Listbox(message_frame, height=15, width=50, yscrollcommand=scrollbar.set)
